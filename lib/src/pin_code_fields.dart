@@ -694,6 +694,7 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
   }
 
   Future<void> _showPasteDialog(String pastedText) {
+    final fontFamily = Theme.of(context).textTheme.bodyLarge?.fontFamily;
     final formattedPastedText = pastedText
         .trim()
         .substring(0, min(pastedText.trim().length, widget.length));
@@ -702,30 +703,30 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
       fontWeight: FontWeight.bold,
       color: Theme.of(context).colorScheme.onSecondary,
     );
+    final pastedTextStyle = (widget.pastedTextStyle ?? defaultPastedTextStyle)
+        .copyWith(fontFamily: fontFamily);
 
     return showDialog(
       context: context,
       useRootNavigator: true,
       builder: (context) => _dialogConfig.platform == PinCodePlatform.iOS
           ? CupertinoAlertDialog(
-              title: Text(_dialogConfig.dialogTitle!),
+              title: Text(
+                _dialogConfig.dialogTitle!,
+                style: TextStyle(fontFamily: fontFamily),
+              ),
               content: RichText(
                 text: TextSpan(
                   text: _dialogConfig.dialogContent,
                   style: TextStyle(
                     color: Theme.of(context).textTheme.labelLarge!.color,
+                    fontFamily: fontFamily,
                   ),
                   children: [
                     TextSpan(
                       text: formattedPastedText,
-                      style: widget.pastedTextStyle ?? defaultPastedTextStyle,
+                      style: pastedTextStyle,
                     ),
-                    TextSpan(
-                      text: "?",
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.labelLarge!.color,
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -735,23 +736,22 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              title: Text(_dialogConfig.dialogTitle!),
+              title: Text(
+                _dialogConfig.dialogTitle!,
+                style: TextStyle(fontFamily: fontFamily),
+              ),
               content: RichText(
                 text: TextSpan(
                   text: _dialogConfig.dialogContent,
                   style: TextStyle(
-                      color: Theme.of(context).textTheme.labelLarge!.color),
+                    color: Theme.of(context).textTheme.labelLarge!.color,
+                    fontFamily: fontFamily,
+                  ),
                   children: [
                     TextSpan(
                       text: formattedPastedText,
-                      style: widget.pastedTextStyle ?? defaultPastedTextStyle,
+                      style: pastedTextStyle,
                     ),
-                    TextSpan(
-                      text: " ?",
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.labelLarge!.color,
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -980,17 +980,20 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
   }
 
   List<Widget> _getActionButtons(String pastedText) {
+    final textStyle = TextStyle(
+      fontFamily: Theme.of(context).textTheme.bodyLarge?.fontFamily,
+    );
     var resultList = <Widget>[];
     if (_dialogConfig.platform == PinCodePlatform.iOS) {
       resultList.addAll([
         CupertinoDialogAction(
-          child: Text(_dialogConfig.negativeText!),
+          child: Text(_dialogConfig.negativeText!, style: textStyle),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
           },
         ),
         CupertinoDialogAction(
-          child: Text(_dialogConfig.affirmativeText!),
+          child: Text(_dialogConfig.affirmativeText!, style: textStyle),
           onPressed: () {
             _textEditingController!.text = pastedText;
             Navigator.of(context, rootNavigator: true).pop();
@@ -1000,13 +1003,13 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
     } else {
       resultList.addAll([
         TextButton(
-          child: Text(_dialogConfig.negativeText!),
+          child: Text(_dialogConfig.negativeText!, style: textStyle),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
           },
         ),
         TextButton(
-          child: Text(_dialogConfig.affirmativeText!),
+          child: Text(_dialogConfig.affirmativeText!, style: textStyle),
           onPressed: () {
             _textEditingController!.text = pastedText;
             Navigator.of(context, rootNavigator: true).pop();
